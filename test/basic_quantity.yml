@@ -1,0 +1,14 @@
+-
+  Make sure inventory gets calculated based on available components.
+-
+  !python {model: product.product}: |
+    kit = self.browse(cr, uid, ref("test_kit"))
+    assert kit.qty_available == 5, "Kit does not have the expected stock on hand!"
+
+-
+  Make sure we don't have any outgoing or incoming quantities.
+-
+  !python {model: product.product}: |
+    kit = self.browse(cr, uid, ref("test_kit"))
+    assert kit.incoming_qty == 0, "Kit has incoming quantities!"
+    assert kit.outgoing_qty == 0, "Kit has outgoing quantities!"
