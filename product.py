@@ -19,15 +19,15 @@ class product(osv.osv):
         if 'done' not in context.get('states', []) or 'in' not in context.get('what', []):
             return res
 
-        for prod_id in res:
-            bom = bom_pool.browse(cr, uid, bom_pool.search(cr, uid, [('product_id', '=', prod_id)]))
+        boms = bom_pool.browse(cr, uid, bom_pool.search(cr, uid, [('product_id', 'in', res.keys())]))
 
-            if not bom or not bom[0].bom_lines:
+        for bom in boms:
+            if not bom.bom_lines:
                 continue
 
             quantities = []
 
-            for l in bom[0].bom_lines:
+            for l in bom.bom_lines:
                 if not l.product_qty:
                     quantities.append(0)
                     break
@@ -35,7 +35,7 @@ class product(osv.osv):
                 quantities.append(
                     (res[l.product_id.id] if l.product_id.id in res else l.product_id.qty_available) / l.product_qty)
 
-            res[prod_id] += min(quantities)
+            res[bom.product_id.id] += min(quantities)
 
         return res
 
